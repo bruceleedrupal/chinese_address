@@ -1,0 +1,12 @@
+name = Chinese Address
+package =  Fields 
+description = Chinese address form element and fields
+version = "7.x-1.0"
+core = "7.x"
+project = "drupal"
+datestamp = "1503997306"
+
+dependencies[] = multiple_fields_remove_button
+
+files[] = views/chinese_address_handler_filter_field_list.inc
+files[] = views/chinese_address_handler_argument_field_list_string.inc

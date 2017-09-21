@@ -1,0 +1,397 @@
+<?php
+
+function chinese_address_element_info()
+{
+    $types['chinese_address'] = array(
+        // #input = TRUE means that the incoming value will be used to figure out
+        // what #value will be.
+        '#input' => true,
+        "#tree" => true,
+        // Allow theme('form_element') to control the markup surrounding this
+        // value on output.
+        "#title_display" => "before",
+        "#theme_wrappers" => array(
+            'form_element',
+            "chinese_address_element"
+        ),
+        // Do not provide autocomplete.
+        "#default_value" => array(
+            "province" => 31,
+            'city' => 386,
+            'county' => 3255,
+            'detail' => ''
+        ),
+        "#process" => array(
+            "_chinese_address_element_process"
+        ),
+        "#has_detail"=>1,
+        '#attached' => array(
+            'css' => array(
+                drupal_get_path('module', 'chinese_address') . '/assets/css/chinese_address.css'
+            )
+        )
+    );
+    return $types;
+}
+
+function chinese_address_theme()
+{
+    return array(
+        'chinese_address_element' => array(
+            'render element' => 'element'
+        ),
+        'chinese_address' => array(
+            'variables' => array('address' => array()),
+            'template' => 'chinese-address',
+        ),
+    );
+
+}
+
+function chinese_address_field_info()
+{
+    return array(
+        'chinese_address' => array(
+            'label' => t('Chinese Address'),
+            'description' => t('This field stores Chinese  province, city, and county.'),   
+            
+            'settings'=>array(
+                'has_detail' => 1,
+            ),
+            'default_widget' => 'chinese_address_default',
+            'default_formatter' => 'chinese_address_default'
+        )
+    );
+}
+
+function chinese_address_field_formatter_info()
+{
+    return array(
+        // This formatter just displays the hex value in the color indicated.
+        'chinese_address_default' => array(
+            'label' => t('Chinese Address  Formatter'),
+            'settings' =>  array(
+                'has_province'=>1,
+                'has_city' => 1,
+                'has_county'=>1,
+                'has_detail'=>1
+            ),
+            'field types' => array(
+                'chinese_address'
+            )
+        )     
+    );
+}
+
+function chinese_address_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display)
+{
+    $element = array();
+    $settings= $display['settings'];    
+
+    switch ($display['type']) {
+        case "chinese_address_default":
+            foreach ($items as $delta => $item) {
+                $address_names = _chinese_address_get_region_index($item);
+                $address = array();
+                $address['province'] =$settings['has_province']&& isset($item['province']) ? $address_names[$item['province']] : '';
+                $address['city'] = $settings['has_city']&&isset($item['city']) ? $address_names[$item['city']] : '';
+                $address['county'] = $settings['has_county']&&isset($item['county']) ? $address_names[$item['county']] : '';
+                $address['detail'] =$settings['has_detail']&&  isset($item['detail'])  ? $item['detail'] : '';
+              
+               $element[$delta] = array(
+                    '#markup' => theme('chinese_address', array(
+                        'address' => $address               
+                    ))
+                );
+            }
+            break;
+          
+    }
+    return $element;
+}
+
+function chinese_address_field_is_empty($item, $field)
+{
+    if ($field['type'] == 'chinese_address') {
+        if (empty($item['province'])
+            && empty($item['city'])
+            && empty($item['county'])) {
+                return TRUE;
+            }
+    }
+    return false;
+}
+
+function chinese_address_field_widget_info()
+{
+    return array(
+        'chinese_address_default' => array(
+            'label' => t('Aajx Select list'),
+            'field types' => array(
+                'chinese_address'
+            )
+        )
+    );
+}
+
+function chinese_address_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element)
+{
+
+    $widget = $element;
+    $settings=$field['settings'];  
+    switch ($instance['widget']['type']) {
+        case "chinese_address_default":
+            $address_value = array();
+            
+            if ($items && isset($items[$delta])) {
+                $address_value = $items[$delta];
+            }
+          
+            if ($address_value)
+                $widget += [
+                    '#default_value' => $address_value
+                ];
+            
+            $widget += array(
+                '#type' => "chinese_address",
+                "#has_detail"=>$settings['has_detail'],
+            );
+            
+            break;
+    }
+    return $widget;
+}
+
+function chinese_address_field_settings_form($field, $instance,$has_data)
+{
+    $form = array();
+    $settings = $field['settings'];
+    switch ($field['type']) {
+        case 'chinese_address':
+            $form['has_detail'] = array(
+                '#title' => t('Need Detail Field?'),
+                '#type' => 'checkbox',
+                '#default_value' => $settings['has_detail'],
+            );
+
+            break;
+    }
+
+    return $form;
+}
+
+function chinese_address_field_instance_settings_form($field, $instance){
+    
+}
+
+
+function chinese_address_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+    
+    $display = $instance['display'][$view_mode];
+    $settings = $display['settings'];
+    $element=array();
+
+    if($display["type"]=='chinese_address_default') {        
+        $element['has_province'] = array(
+            '#type' => 'checkbox',
+            '#title' => t('Has Province'),
+            '#default_value' => $settings['has_province'],
+        );
+        $element['has_city'] = array(
+            '#type' => 'checkbox',
+            '#title' => t('Has City'),
+            '#default_value' => $settings['has_city'],
+        );
+        $element['has_county'] = array(
+            '#type' => 'checkbox',
+            '#title' => t('Has County'),
+            '#default_value' => $settings['has_county'],
+        );
+        $element['has_detail'] = array(
+            '#type' => 'checkbox',
+            '#title' => t('Has Detail'),
+            '#default_value' => $settings['has_detail'],
+        );
+        
+    }
+    return $element;    
+    
+}
+
+
+function chinese_address_field_formatter_settings_summary($field, $instance, $view_mode) {
+    return "Settings";
+}
+
+function _chinese_address_element_process($element, $form_state, $complete_form)
+{
+    $parents = $element['#parents'];
+   
+    $address_value = drupal_array_get_nested_value($form_state["input"], $parents);
+    // $wrapper_id=drupal_html_id("edit-".implode('-', $element['#parents']));
+    if (! $address_value)
+        $address_value = $element['#value'];
+    $address_value += array(
+        'province' => null,
+        "city" => null,
+        'county' => null,
+        'detail' => null
+    );
+  
+    $city = array();
+    if ((isset($address_value['province']))) {
+        $city = _chinese_address_get_location($address_value['province']);
+        if (! isset($address_value['city']) || ! array_key_exists($address_value['city'], $city)) {
+            $address_value['city'] = key($city);
+        }
+    } else {
+        $city = _chinese_address_get_siblings($address_value['city']);
+    }
+    
+    $county = _chinese_address_get_location($address_value['city']);
+    if (! isset($address_value['county']) || ! array_key_exists($address_value['county'], $county)) {
+        $address_value['county'] = key($county);
+    }
+
+            $element['province'] = array(
+                "#type" => "select",
+                "#theme_wrappers" => array(),
+                "#attributes" => array(
+                    'class' => array(
+                        'chinese-address-province'
+                    )
+                ),
+                "#default_value" => $address_value['province'],
+                "#options" => _chinese_address_get_location(),
+                '#ajax' => array(
+                    'callback' => '_chinese_address_change_callback',
+                    'wrapper' => $element["#id"],
+                    'progress' => array(
+                        'type' => "none"
+                    )
+                )
+            );
+
+    
+    $element['city'] = array(
+        "#type" => "select",
+        "#validated" => true,
+        "#theme_wrappers" => array(),
+        "#options" => $city,
+        "#value" => $address_value['city'],
+        "#attributes" => array(
+            'class' => array(
+                'chinese-address-city'
+            )
+        
+        ),
+        '#ajax' => array(
+            'callback' => '_chinese_address_change_callback',
+            'wrapper' => $element["#id"],
+            'progress' => array(
+                'type' => "none"
+            )
+        )
+    );
+    
+    $element['county'] = array(
+        "#type" => "select",
+        "#theme_wrappers" => array(),
+        "#options" => $county,
+        "#validated" => true,
+        "#default_value" => $address_value['county'],
+        "#attributes" => array(
+            'class' => array(
+                'chinese-address-county'
+            )
+        
+        )
+    );
+    
+    if($element['#has_detail']) {
+            $element['detail'] = array(
+                "#type" => "textfield",
+                "#theme_wrappers" => array(),
+                "#size" => 20,
+                "#default_value" => $address_value['detail'],
+                "#maxlength" => 60,
+                "#attributes" => array(
+                    'class' => array(
+                        'chinese-address-detail'
+                    )
+                )
+            );   
+    }
+    
+    return $element;
+}
+
+function theme_chinese_address_element($variables)
+{
+    $element = $variables['element'];
+    element_set_attributes($element, array('id'));
+    _form_set_class($element, array(
+        'chinese-address'
+    ));
+    return "<div " . drupal_attributes($element['#attributes']) . ">" . $element['#children'] . "</div>";
+}
+
+function _chinese_address_get_location($parent_id = 1)
+{
+    $result = db_select('{chinese_address}', 'c')->fields('c')
+        ->condition('c.parent_id ', $parent_id)
+        ->execute()
+        ->fetchAllKeyed(0, 2);
+    return $result;
+}
+
+function _chinese_address_get_siblings($region_id = 1)
+{
+    $subquery = db_select('{chinese_address}', 'ca')->fields('ca', array(
+        'parent_id'
+    ))->condition('ca.region_id', $region_id);
+    
+    $result = db_select('{chinese_address}', 'c')->fields('c')
+        ->condition('c.parent_id ', $subquery, 'in')
+        ->execute()
+        ->fetchAllKeyed(0, 2);
+    return $result;
+}
+
+function _chinese_address_change_callback($form, $form_state)
+{
+    $parents = $form_state['triggering_element']['#parents'];
+    array_pop($parents);
+    if ($form["#form_id"] == "field_ui_field_edit_form")
+        return drupal_array_get_nested_value($form['instance']['default_value_widget'], $parents);
+    else {
+        $element = drupal_array_get_nested_value($form, $parents);
+        if (isset($element["_weight"]))
+            hide($element["_weight"]);
+        return $element;
+    }
+}
+
+function _chinese_address_get_region_index($address)
+{
+    $address_names = array();
+    if (isset($address['detail']))
+        unset($address['detail']);
+    $result = db_select('{chinese_address}', 'c')->fields('c')
+        ->condition('region_id', $address, 'IN')
+        ->execute()
+        ->fetchAllKeyed(0, 2);
+    return $result;
+}
+
+
+function chinese_address_multiple_field_remove_button_field_widgets_alter(&$fieldwidgets) {
+     $fieldwidgets[]=  'chinese_address_default';
+}
+
+
+function chinese_address_views_api() {
+    return array(
+        'api' => 3,   
+    );
+}

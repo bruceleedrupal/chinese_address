@@ -1,0 +1,13 @@
+diff --git a/modules/field/field.form.inc b/modules/field/field.form.inc
+index 280f778..ba9b853 100644
+--- a/modules/field/field.form.inc
++++ b/modules/field/field.form.inc
+@@ -185,7 +185,7 @@ function field_multiple_value_form($field, $instance, $langcode, $items, &$form,
+   switch ($field['cardinality']) {
+     case FIELD_CARDINALITY_UNLIMITED:
+       $field_state = field_form_get_state($parents, $field_name, $langcode, $form_state);
+-      $max = $field_state['items_count'];
++      $max = $field_state['items_count']?($field_state['items_count']-1):$field_state['items_count'];
+       break;
+ 
+     default:
