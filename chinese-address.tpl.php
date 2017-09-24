@@ -1,2 +1,6 @@
 <?php
-echo  implode('',$address);
+
+/**
+ * @file
+ */
+echo implode('', $address);
