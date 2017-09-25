@@ -114,6 +114,7 @@ function chinese_address_install() {
       $address[$i]->childs = $otherAddress[(int) $a->code]->childs;
     }
   }
+ 
 
   _chinese_address_print_area($address, []);
   _chinese_address_insert_rows();
@@ -144,7 +145,7 @@ function _chinese_address_insert_address($address, $parent, $level) {
   global $queryArray;
   $parent = (object) $parent;
   if ($parent == new stdClass()) {
-    $parent->code = 1000;
+    $parent->code = 1;
   }
 
   $queryArray[] = [

@@ -5,7 +5,7 @@
  * Chinese address main module file.
  */
 
-const CHINESE_ADDRESS_ROOT_INDEX = 1000;
+const CHINESE_ADDRESS_ROOT_INDEX = 1;
 const CHINESE_ADDRESS_NULL_INDEX = 0;
 
 /**
@@ -20,8 +20,8 @@ function chinese_address_element_info() {
       'chinese_address_element',
     ),
     '#default_value' => array(
-      'province' => 330000,
-      'city' => 330700,
+      'province' => 33,
+      'city' => 3307,
       'county' => 330702,
       'street' => 330702008000,
       'detail' => '',
