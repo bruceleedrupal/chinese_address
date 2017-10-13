@@ -21,11 +21,7 @@ function chinese_address_element_info() {
       'chinese_address_element',
     ),
     '#default_value' => array(
-      'province' => 33,
-      'city' => 3307,
-      'county' => 330702,
-      'street' => 330702008000,
-      'detail' => '',
+      'province' => CHINESE_ADDRESS_NULL_INDEX,
     ),
     '#process' => array(
       '_chinese_address_element_process',
@@ -132,7 +128,7 @@ function chinese_address_field_formatter_view($entity_type, $entity, $field, $in
  */
 function chinese_address_field_is_empty($item, $field) {
   if ($field['type'] == 'chinese_address') {
-    if (empty($item['province']) && empty($item['city']) && empty($item['county'] && empty($item['street']))) {
+    if (empty($item['province'])) {
       return TRUE;
     }
   }
@@ -295,6 +291,7 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
 
   $element['city'] = array(
     '#type' => 'select',
+    '#access' => !empty($city),
     '#validated' => TRUE,
     '#theme_wrappers' => array(),
     '#options' => $city,
@@ -352,6 +349,7 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
   if ($element['#has_detail']) {
     $element['detail'] = array(
       '#type' => 'textfield',
+      '#access' => !empty($city),
       '#theme_wrappers' => array(),
       '#size' => 20,
       '#default_value' => $address_value['detail'],
@@ -388,6 +386,10 @@ function theme_chinese_address_element($variables) {
  */
 function _chinese_address_get_location($parentId = CHINESE_ADDRESS_ROOT_INDEX) {
   $result = db_select('chinese_address', 'c')->fields('c')->condition('c.parent_id ', $parentId)->execute()->fetchAllKeyed(0, 2);
+  if ($parentId == CHINESE_ADDRESS_ROOT_INDEX) {
+    $result[CHINESE_ADDRESS_NULL_INDEX] = '--- 无----';
+    ksort($result);
+  }
   return $result;
 }
 
@@ -443,12 +445,6 @@ function _chinese_address_form_element_validate($element, &$form_state) {
     'street' => CHINESE_ADDRESS_NULL_INDEX,
   );
   form_set_value($element, $values, $form_state);
-}
-
-/**
- */
-function chinese_address_multiple_field_remove_button_field_widgets_alter(&$fieldwidgets) {
-  $fieldwidgets[] = 'chinese_address_default';
 }
 
 /**

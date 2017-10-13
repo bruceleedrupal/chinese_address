@@ -1,8 +1,9 @@
 /* line 2, ../../sass/chinese_address.scss */
 .chinese-address select {
   margin-right: 10px;
+  width: 100px;
 }
-/* line 5, ../../sass/chinese_address.scss */
+/* line 6, ../../sass/chinese_address.scss */
 .chinese-address input {
   margin-right: 5px;
   padding: 5px 0 4px 5px;

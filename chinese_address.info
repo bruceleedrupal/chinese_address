@@ -3,7 +3,7 @@ package =  Fields
 description = Chinese address form element and fields
 core = "7.x"
 
-dependencies[] = multiple_fields_remove_button
+
 
 files[] = views/chinese_address_handler_filter_field_list.inc
 files[] = views/chinese_address_handler_argument_field_list_string.inc
