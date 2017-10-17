@@ -4,6 +4,7 @@ namespace Drupal\chinese_address\Plugin\Field\FieldType;
 
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\chinese_address\chineseAddressHelper;
 
@@ -25,14 +26,13 @@ class ChineseAddressFieldType extends FieldItemBase
     /**
    * {@inheritdoc}
    *
-   * Public static function defaultStorageSettings() {
-   * return [
-   * 'max_length' => 255,
-   * 'is_ascii' => FALSE,
-   * 'case_sensitive' => FALSE
-   * ] + parent::defaultStorageSettings();
-   * }
-   */
+  */
+    Public static function defaultStorageSettings() {
+    return [
+    'has_detail' => TRUE,
+   ] + parent::defaultStorageSettings();
+    }
+
 
     /**
    * {@inheritdoc}
@@ -60,31 +60,31 @@ class ChineseAddressFieldType extends FieldItemBase
         'province' => [
           'type' => 'int',
           'size' => 'big',
-          'not null' => false,
+          'not null' => FALSE,
           'default' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         ],
         'city' => [
           'type' => 'int',
           'size' => 'big',
-        'not null' => false,
+        'not null' => FALSE,
           'default' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         ],
         'county' => [
           'type' => 'int',
           'size' => 'big',
-        'not null' => false,
+        'not null' => FALSE,
           'default' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         ],
         'street' => [
           'type' => 'int',
           'size' => 'big',
-        'not null' => false,
+        'not null' => FALSE,
           'default' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         ],
         'detail' => [
           'type' => 'varchar',
           'length' => 255,
-        'not null' => false,
+        'not null' => FALSE,
         ],
         ],
         'indexes' => [
@@ -105,40 +105,20 @@ class ChineseAddressFieldType extends FieldItemBase
 
         return $schema;
     }
-
     /**
-   * {@inheritdoc}
-   *
-   * Public function getConstraints() {
-   * $constraints = parent::getConstraints();
-   *
-   * if ($max_length = $this->getSetting('max_length')) {
-   * $constraint_manager = \Drupal::typedDataManager()->getValidationConstraintManager();
-   * $constraints[] = $constraint_manager->create('ComplexData', [
-   * 'value' => [
-   * 'Length' => [
-   * 'max' => $max_length,
-   * 'maxMessage' => t('%name: may not be longer than @max characters.', [
-   * '%name' => $this->getFieldDefinition()->getLabel(),
-   * '@max' => $max_length
-   * ])
-   * ]
-   * ]
-   * ]);
-   * }
-   *
-   * return $constraints;
-   * }
-   */
-    /**
-   * {@inheritdoc}
-   *
-   * Public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
-   * $random = new Random();
-   * $values['value'] = $random->word(mt_rand(1, $field_definition->getSetting('max_length')));
-   * return $values;
-   * }
-   */
+     * {@inheritdoc}
+     */
+    public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
+      $element = [];
+      
+      $element['has_detail'] = array(
+      '#title' => t('Need Detail Field?'),
+      '#type' => 'checkbox',
+      '#default_value' => $this->getSetting('has_detail'),
+      );
+      
+      return $element;
+    }
 
     /**
    * {@inheritdoc}
