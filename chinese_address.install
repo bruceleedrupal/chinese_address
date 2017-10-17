@@ -15,31 +15,31 @@ function chinese_address_field_schema($field) {
     $schema['columns']['province'] = array(
       'type' => 'int',
       'size' => 'big',
-      'not null' => TRUE,
+      'not null' => FALSE,
       'default' => 0,
     );
     $schema['columns']['city'] = array(
       'type' => 'int',
       'size' => 'big',
-      'not null' => TRUE,
+    'not null' => FALSE,
       'default' => 0,
     );
     $schema['columns']['county'] = array(
       'type' => 'int',
       'size' => 'big',
-      'not null' => TRUE,
+    'not null' => FALSE,
       'default' => 0,
     );
     $schema['columns']['street'] = array(
       'type' => 'int',
       'size' => 'big',
-      'not null' => TRUE,
+    'not null' => FALSE,
       'default' => 0,
     );
     $schema['columns']['detail'] = array(
       'type' => 'varchar',
       'length' => 255,
-      'not null' => TRUE,
+    'not null' => FALSE,
     );
     $schema['indexes'] = array(
       'province' => array(
