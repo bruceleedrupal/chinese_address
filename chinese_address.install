@@ -5,44 +5,43 @@
  * Chinese Address 安装数据表.
  */
 
-$queryArray = array();
-
+$queryArray = [];
 
 /**
  * 实现 hook_schema().
  */
 function chinese_address_schema() {
-  $schema['chinese_address'] = array(
-    'fields' => array(
-      'id' => array(
+  $schema['chinese_address'] = [
+    'fields' => [
+      'id' => [
         'type' => 'int',
         'size' => 'big',
         'not null' => TRUE,
-      ),
-      'parent_id' => array(
+      ],
+      'parent_id' => [
         'type' => 'int',
         'size' => 'big',
         'not null' => TRUE,
-      ),
-      'name' => array(
+      ],
+      'name' => [
         'type' => 'varchar',
         'length' => 120,
         'not null' => TRUE,
-      ),
-      'level' => array(
+      ],
+      'level' => [
         'type' => 'int',
         'size' => 'tiny',
         'not null' => TRUE,
-      ),
-    ),
-    'primary key' => array('id'),
-    'indexes' => array(
-      'parent_id' => array(
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'parent_id' => [
         'parent_id',
-      ),
+      ],
 
-    ),
-  );
+    ],
+  ];
 
   return $schema;
 }

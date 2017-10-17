@@ -4,7 +4,6 @@ namespace Drupal\user\Plugin\views\argument;
 
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\views\Plugin\views\argument\ManyToOne;
-use Drupal\chinese_address\chineseAddressHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -15,8 +14,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @ViewsArgument("chinese_address")
  */
 class ChineseAddress extends ManyToOne {
-
-
 
   /**
    * Constructs a \Drupal\user\Plugin\views\argument\RolesRid object.
@@ -41,7 +38,5 @@ class ChineseAddress extends ManyToOne {
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static($configuration, $plugin_id, $plugin_definition);
   }
-
-
 
 }

@@ -16,10 +16,10 @@ use Drupal\field\FieldStorageConfigInterface;
  * @see views_field_default_views_data()
  */
 function chinese_address_field_views_data_alter(array &$data, FieldStorageConfigInterface $field_storage) {
-  if ($field_storage->getType() == 'chinese_address_field_type' ) {
+  if ($field_storage->getType() == 'chinese_address_field_type') {
     foreach ($data as $table_name => $table_data) {
       foreach ($table_data as $field_name => $field_data) {
-        if (isset($field_data['filter']) &&  (strpos($field_name, "province")!==FALSE)) {
+        if (isset($field_data['filter']) &&  (strpos($field_name, "province") !== FALSE)) {
           $data[$table_name][$field_name]['filter']['id'] = 'chinese_address';
           $data[$table_name][$field_name]['argument']['id'] = 'chinese_address';
         }
@@ -27,5 +27,3 @@ function chinese_address_field_views_data_alter(array &$data, FieldStorageConfig
     }
   }
 }
-
-

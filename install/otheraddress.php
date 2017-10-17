@@ -4,15 +4,15 @@
  * @file
  */
 
-$otherAddress = array(
+$otherAddress = [
   81 => (object) [
     "code" => "81",
     "name" => "香港特别行政区",
-    "childs" => array(
+    "childs" => [
       (object) [
         "code" => "810200",
         "name" => "九龙",
-        "childs" => array(
+        "childs" => [
           (object) [
             "code" => "810205",
             "name" => "观塘",
@@ -34,12 +34,12 @@ $otherAddress = array(
             "name" => "油尖旺",
           ],
 
-        ),
+        ],
       ],
       (object) [
         "code" => "810100",
         "name" => "香港岛",
-        'childs' => array(
+        'childs' => [
           (object) [
             "code" => "810103",
             "name" => "东区",
@@ -57,12 +57,12 @@ $otherAddress = array(
             "name" => "中西",
           ],
 
-        ),
+        ],
       ],
       (object) [
         "code" => "810300",
         "name" => "新界",
-        "childs" => array(
+        "childs" => [
           (object) [
             "code" => "810301",
             "name" => "北区",
@@ -99,40 +99,40 @@ $otherAddress = array(
             "code" => "810305",
             "name" => "元朗",
           ],
-        ),
+        ],
       ],
-    ),
+    ],
   ],
-);
+];
 
 $otherAddress[82] = (object) [
   "code" => "82",
   "name" => "澳门特别行政区",
-  "childs" => array(
+  "childs" => [
     (object) ["code" => "8201", "name" => "澳门半岛"],
     (object) ["code" => "8202", "name" => "离岛"],
-  ),
+  ],
 ];
 
 $otherAddress[71] = (object) [
   "code" => "71",
   "name" => "台湾省",
-  "childs" => array(
+  "childs" => [
     (object) [
       "code" => "7128",
       "name" => "连江",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "712806", "name" => "北竿"],
         (object) ["code" => "712808", "name" => "东引"],
         (object) ["code" => "712807", "name" => "莒光"],
         (object) ["code" => "712805", "name" => "南竿"],
 
-      ),
+      ],
     ],
     (object) [
       "code" => "7102",
       "name" => "高雄",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "710246", "name" => "阿莲"],
         (object) ["code" => "710255", "name" => "大寮"],
         (object) ["code" => "710243", "name" => "大社"],
@@ -173,12 +173,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "710204", "name" => "盐埕"],
         (object) ["code" => "710209", "name" => "左营"],
 
-      ),
+      ],
     ],
     (object) [
       "code" => "7126",
       "name" => "花莲",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "712623", "name" => "丰滨"],
         (object) ["code" => "712621", "name" => "凤林"],
         (object) ["code" => "712628", "name" => "富里"],
@@ -194,12 +194,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "712625", "name" => "万荣"],
         (object) ["code" => "712626", "name" => "玉里"],
 
-      ),
+      ],
     ],
     (object) [
       "code" => "7119",
       "name" => "嘉义",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "711901", "name" => "东区"],
         (object) ["code" => "711902", "name" => "西区"],
         (object) ["code" => "711922", "name" => "阿里山"],
@@ -221,12 +221,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "711927", "name" => "太保"],
         (object) ["code" => "711935", "name" => "义竹"],
 
-      ),
+      ],
     ],
     (object) [
       "code" => "7107",
       "name" => "基隆",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "710705", "name" => "安乐"],
         (object) ["code" => "710706", "name" => "暖暖"],
         (object) ["code" => "710707", "name" => "七堵"],
@@ -235,24 +235,24 @@ $otherAddress[71] = (object) [
         (object) ["code" => "710704", "name" => "中山"],
         (object) ["code" => "710703", "name" => "中正"],
 
-      ),
+      ],
     ],
     (object) [
       "code" => "7105",
       "name" => "金门",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "710510", "name" => "金城"],
         (object) ["code" => "710508", "name" => "金湖"],
         (object) ["code" => "710509", "name" => "金宁"],
         (object) ["code" => "710507", "name" => "金沙"],
         (object) ["code" => "710511", "name" => "烈屿"],
         (object) ["code" => "710512", "name" => "乌坵"],
-      ),
+      ],
     ],
     (object) [
       "code" => "7115",
       "name" => "苗栗",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "711531", "name" => "大湖"],
         (object) ["code" => "711530", "name" => "公馆"],
         (object) ["code" => "711524", "name" => "后龙"],
@@ -271,12 +271,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "711529", "name" => "头屋"],
         (object) ["code" => "711526", "name" => "苑里"],
         (object) ["code" => "711528", "name" => "造桥"],
-      ),
+      ],
     ],
     (object) [
       "code" => "7106",
       "name" => "南投",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "710616", "name" => "草屯"],
         (object) ["code" => "710617", "name" => "国姓"],
         (object) ["code" => "710615", "name" => "中寮"],
@@ -290,12 +290,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "710622", "name" => "水里"],
         (object) ["code" => "710624", "name" => "信义"],
         (object) ["code" => "710623", "name" => "鱼池"],
-      ),
+      ],
     ],
     (object) [
       "code" => "7127",
       "name" => "澎湖",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "712711", "name" => "白沙"],
         (object) ["code" => "712710", "name" => "七美"],
         (object) ["code" => "712712", "name" => "湖西"],
@@ -303,12 +303,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "712708", "name" => "西屿"],
         (object) ["code" => "712709", "name" => "望安"],
 
-      ),
+      ],
     ],
     (object) [
       "code" => "7124",
       "name" => "屏东",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "712442", "name" => "长治"],
         (object) ["code" => "712447", "name" => "潮州"],
         (object) ["code" => "712463", "name" => "车城"],
@@ -342,12 +342,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "712450", "name" => "万峦"],
         (object) ["code" => "712436", "name" => "雾台"],
         (object) ["code" => "712441", "name" => "盐埔"],
-      ),
+      ],
     ],
     (object) [
       "code" => "7101",
       "name" => "台北",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "710109", "name" => "北投"],
         (object) ["code" => "710105", "name" => "大安"],
         (object) ["code" => "710102", "name" => "大同"],
@@ -360,12 +360,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "710112", "name" => "文山"],
         (object) ["code" => "710103", "name" => "中山"],
         (object) ["code" => "710101", "name" => "中正"],
-      ),
+      ],
     ],
     (object) [
       "code" => "7125",
       "name" => "台东",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "712521", "name" => "卑南"],
         (object) ["code" => "712528", "name" => "长滨"],
         (object) ["code" => "712527", "name" => "成功"],
@@ -382,12 +382,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "712517", "name" => "台东"],
         (object) ["code" => "712532", "name" => "太麻里"],
         (object) ["code" => "712520", "name" => "延平"],
-      ),
+      ],
     ],
     (object) [
       "code" => "7103",
       "name" => "台南",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "710369", "name" => "安定"],
         (object) ["code" => "710359", "name" => "白河"],
         (object) ["code" => "710356", "name" => "北门"],
@@ -425,12 +425,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "710302", "name" => "东区"],
         (object) ["code" => "710303", "name" => "南区"],
         (object) ["code" => "710301", "name" => "中西"],
-      ),
+      ],
     ],
     (object) [
       "code" => "7104",
       "name" => "台中",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "710451", "name" => "大安"],
         (object) ["code" => "710444", "name" => "大肚"],
         (object) ["code" => "710449", "name" => "大甲"],
@@ -460,12 +460,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "710404", "name" => "西区"],
         (object) ["code" => "710407", "name" => "西屯"],
         (object) ["code" => "710401", "name" => "中区"],
-      ),
+      ],
     ],
     (object) [
       "code" => "7114",
       "name" => "桃园",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "711422", "name" => "八德"],
         (object) ["code" => "711423", "name" => "大溪"],
         (object) ["code" => "711425", "name" => "大园"],
@@ -479,12 +479,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "711418", "name" => "新屋"],
         (object) ["code" => "711420", "name" => "桃园"],
         (object) ["code" => "711417", "name" => "杨梅"],
-      ),
+      ],
     ],
     (object) [
       "code" => "7111",
       "name" => "新北",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "711155", "name" => "八里"],
         (object) ["code" => "711132", "name" => "板桥"],
         (object) ["code" => "711156", "name" => "淡水"],
@@ -515,12 +515,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "711148", "name" => "莺歌"],
         (object) ["code" => "711143", "name" => "永和"],
 
-      ),
+      ],
     ],
     (object) [
       "code" => "7113",
       "name" => "新竹",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "711302", "name" => "北区"],
         (object) ["code" => "711301", "name" => "东区"],
         (object) ["code" => "711303", "name" => "香山"],
@@ -538,12 +538,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "711317", "name" => "新埔"],
         (object) ["code" => "711322", "name" => "五峰"],
 
-      ),
+      ],
     ],
     (object) [
       "code" => "7112",
       "name" => "宜兰",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "711221", "name" => "大同"],
         (object) ["code" => "711223", "name" => "冬山"],
         (object) ["code" => "711217", "name" => "壮围"],
@@ -558,12 +558,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "711218", "name" => "员山"],
         (object) ["code" => "711226", "name" => "钓鱼"],
 
-      ),
+      ],
     ],
     (object) [
       "code" => "7121",
       "name" => "云林",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "712125", "name" => "褒忠"],
         (object) ["code" => "712136", "name" => "北港"],
         (object) ["code" => "712133", "name" => "莿桐"],
@@ -584,12 +584,12 @@ $otherAddress[71] = (object) [
         (object) ["code" => "712127", "name" => "台西"],
         (object) ["code" => "712124", "name" => "土库"],
         (object) ["code" => "712140", "name" => "元长"],
-      ),
+      ],
     ],
     (object) [
       "code" => "7117",
       "name" => "彰化",
-      "childs" => array(
+      "childs" => [
         (object) ["code" => "711744", "name" => "北斗"],
         (object) ["code" => "711750", "name" => "大城"],
         (object) ["code" => "711741", "name" => "大村"],
@@ -616,9 +616,9 @@ $otherAddress[71] = (object) [
         (object) ["code" => "711745", "name" => "田尾"],
         (object) ["code" => "711738", "name" => "永靖"],
         (object) ["code" => "711736", "name" => "员林"],
-      ),
+      ],
     ],
 
 
-  ),
+  ],
 ];
