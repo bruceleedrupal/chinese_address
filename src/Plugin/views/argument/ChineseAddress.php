@@ -13,30 +13,33 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @ViewsArgument("chinese_address")
  */
-class ChineseAddress extends ManyToOne {
+class ChineseAddress extends ManyToOne
+{
 
-  /**
+    /**
    * Constructs a \Drupal\user\Plugin\views\argument\RolesRid object.
    *
-   * @param array $configuration
+   * @param array                                      $configuration
    *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
+   * @param string                                     $plugin_id
    *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
+   * @param mixed                                      $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) 
+    {
+        parent::__construct($configuration, $plugin_id, $plugin_definition);
 
-  }
+    }
 
-  /**
+    /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static($configuration, $plugin_id, $plugin_definition);
-  }
+    public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) 
+    {
+        return new static($configuration, $plugin_id, $plugin_definition);
+    }
 
 }

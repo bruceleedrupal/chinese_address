@@ -19,9 +19,10 @@ use Drupal\chinese_address\chineseAddressHelper;
  * default_formatter = "chinese_address_formatter_type"
  * )
  */
-class ChineseAddressFieldType extends FieldItemBase {
+class ChineseAddressFieldType extends FieldItemBase
+{
 
-  /**
+    /**
    * {@inheritdoc}
    *
    * Public static function defaultStorageSettings() {
@@ -33,58 +34,60 @@ class ChineseAddressFieldType extends FieldItemBase {
    * }
    */
 
-  /**
+    /**
    * {@inheritdoc}
    */
-  public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
-    // Prevent early t() calls by using the TranslatableMarkup.
-    $properties = [
-      'province' => DataDefinition::create('integer')->setLabel(t('Province')),
-      'city' => DataDefinition::create('integer')->setLabel(t('City')),
-      'county' => DataDefinition::create('integer')->setLabel(t('County')),
-      'street' => DataDefinition::create('integer')->setLabel(t('Street')),
-      'detail' => DataDefinition::create('string')->setLabel(t('Detail')),
-    ];
-    return $properties;
-  }
+    public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) 
+    {
+        // Prevent early t() calls by using the TranslatableMarkup.
+        $properties = [
+        'province' => DataDefinition::create('integer')->setLabel(t('Province')),
+        'city' => DataDefinition::create('integer')->setLabel(t('City')),
+        'county' => DataDefinition::create('integer')->setLabel(t('County')),
+        'street' => DataDefinition::create('integer')->setLabel(t('Street')),
+        'detail' => DataDefinition::create('string')->setLabel(t('Detail')),
+        ];
+        return $properties;
+    }
 
-  /**
+    /**
    * {@inheritdoc}
    */
-  public static function schema(FieldStorageDefinitionInterface $field_definition) {
-    $schema = [
-      'columns' => [
+    public static function schema(FieldStorageDefinitionInterface $field_definition) 
+    {
+        $schema = [
+        'columns' => [
         'province' => [
           'type' => 'int',
           'size' => 'big',
-          'not null' => TRUE,
+          'not null' => false,
           'default' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         ],
         'city' => [
           'type' => 'int',
           'size' => 'big',
-          'not null' => TRUE,
+        'not null' => false,
           'default' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         ],
         'county' => [
           'type' => 'int',
           'size' => 'big',
-          'not null' => TRUE,
+        'not null' => false,
           'default' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         ],
         'street' => [
           'type' => 'int',
           'size' => 'big',
-          'not null' => TRUE,
+        'not null' => false,
           'default' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         ],
         'detail' => [
           'type' => 'varchar',
           'length' => 255,
-          'not null' => TRUE,
+        'not null' => false,
         ],
-      ],
-      'indexes' => [
+        ],
+        'indexes' => [
         'province' => [
           'province',
         ],
@@ -97,13 +100,13 @@ class ChineseAddressFieldType extends FieldItemBase {
         'street' => [
           'street',
         ],
-      ],
-    ];
+        ],
+        ];
 
-    return $schema;
-  }
+        return $schema;
+    }
 
-  /**
+    /**
    * {@inheritdoc}
    *
    * Public function getConstraints() {
@@ -127,7 +130,7 @@ class ChineseAddressFieldType extends FieldItemBase {
    * return $constraints;
    * }
    */
-  /**
+    /**
    * {@inheritdoc}
    *
    * Public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
@@ -137,12 +140,16 @@ class ChineseAddressFieldType extends FieldItemBase {
    * }
    */
 
-  /**
+    /**
    * {@inheritdoc}
    */
-  public function isEmpty() {
-    $value = $this->get('province')->getValue();
-    return $value == chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX;
-  }
+    public function isEmpty() 
+    {
+        $province = $this->get('province')->getValue();
+        $city = $this->get('city')->getValue();
+        $county = $this->get('county')->getValue();
+        $street = $this->get('street')->getValue();
+        return ($province == chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX && $city==  chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX  && $county==  chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX  &&  $street==  chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX);
+    }
 
 }

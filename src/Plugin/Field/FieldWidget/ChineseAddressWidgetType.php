@@ -17,17 +17,19 @@ use Drupal\Core\Form\FormStateInterface;
  *   }
  * )
  */
-class ChineseAddressWidgetType extends WidgetBase {
+class ChineseAddressWidgetType extends WidgetBase
+{
 
-  /**
+    /**
    * {@inheritdoc}
    */
-  public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-    $element = $element + [
-      '#type' => 'chinese_address',
-      '#default_value' => $items[$delta]->getValue() ? $items[$delta]->getValue() : NULL,
-    ];
-    return $element;
-  }
+    public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) 
+    {
+        $element = $element + [
+        '#type' => 'chinese_address',
+        '#default_value' => $items[$delta]->getValue() ? $items[$delta]->getValue() : null,
+        ];
+        return $element;
+    }
 
 }
