@@ -112,11 +112,7 @@ function chinese_address_field_formatter_view($entity_type, $entity, $field, $in
         $address['detail'] = $settings['has_detail'] && isset($item['detail']) ? $item['detail'] : '';
 
         $element[$delta] = array(
-          '#markup' => theme(
-            'chinese_address', array(
-              'address' => $address,
-            )
-          ),
+          '#markup' =>implode($address)
         );
       }
       break;
@@ -128,7 +124,7 @@ function chinese_address_field_formatter_view($entity_type, $entity, $field, $in
  */
 function chinese_address_field_is_empty($item, $field) {
   if ($field['type'] == 'chinese_address') {
-    if (empty($item['province'])) {
+    if (empty($item['province']) && empty($item['city'])) {
       return TRUE;
     }
   }
@@ -242,11 +238,11 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
     $address_value = $element['#value'];
   }
   $address_value += array(
-    'province' => NULL,
-    'city' => NULL,
-    'county' => NULL,
-    'street' => NULL,
-    'detail' => NULL,
+  'province' => CHINESE_ADDRESS_NULL_INDEX,
+  'city' => CHINESE_ADDRESS_NULL_INDEX,
+  'county' => CHINESE_ADDRESS_NULL_INDEX,
+  'street' => CHINESE_ADDRESS_NULL_INDEX,
+    'detail' => '',
   );
 
   $city = array();
@@ -409,18 +405,14 @@ function _chinese_address_get_siblings($regionId = 1) {
 /**
  */
 function _chinese_address_change_callback($form, $form_state) {
-  $parents = $form_state['triggering_element']['#parents'];
+  $parents = $form_state['triggering_element']['#array_parents'];
   array_pop($parents);
-  if ($form['#form_id'] == 'field_ui_field_edit_form') {
-    return drupal_array_get_nested_value($form['instance']['default_value_widget'], $parents);
-  }
-  else {
     $element = drupal_array_get_nested_value($form, $parents);
     if (isset($element['_weight'])) {
       hide($element['_weight']);
     }
     return $element;
-  }
+
 }
 
 /**
