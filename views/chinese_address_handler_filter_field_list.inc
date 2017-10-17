@@ -31,7 +31,7 @@ class chinese_address_handler_filter_field_list extends views_handler_filter_man
    *
    */
   public function get_value_options() {
-    $this->value_options = _chinese_address_get_location();
+    $this->value_options = _chinese_address_get_location(CHINESE_ADDRESS_ROOT_INDEX,TRUE);
   }
 
 }

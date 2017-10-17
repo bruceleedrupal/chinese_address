@@ -124,9 +124,9 @@ function chinese_address_field_formatter_view($entity_type, $entity, $field, $in
  */
 function chinese_address_field_is_empty($item, $field) {
   if ($field['type'] == 'chinese_address') {
-    if (empty($item['province']) && empty($item['city'])) {
+    if ( (int) $item['province'] ==CHINESE_ADDRESS_NULL_INDEX  &&   (int) $item['city'] ==  CHINESE_ADDRESS_NULL_INDEX  && (int) $item['county'] ==CHINESE_ADDRESS_NULL_INDEX  && (int) $item['street'] ==CHINESE_ADDRESS_NULL_INDEX) {
       return TRUE;
-    }
+    }       
   }
   return FALSE;
 }
@@ -136,7 +136,7 @@ function chinese_address_field_is_empty($item, $field) {
 function chinese_address_field_widget_info() {
   return array(
     'chinese_address_default' => array(
-      'label' => t('Aajx Select list'),
+      'label' => t('Select list'),
       'field types' => array(
         'chinese_address',
       ),
@@ -163,9 +163,11 @@ function chinese_address_field_widget_form(&$form, &$form_state, $field, $instan
       $widget += array(
         '#type' => 'chinese_address',
         '#has_detail' => $settings['has_detail'],
+      '#required' => $instance['required'],
       );
       break;
   }
+
   return $widget;
 }
 
@@ -380,9 +382,9 @@ function theme_chinese_address_element($variables) {
 
 /**
  */
-function _chinese_address_get_location($parentId = CHINESE_ADDRESS_ROOT_INDEX) {
+function _chinese_address_get_location($parentId = CHINESE_ADDRESS_ROOT_INDEX ,$excludeNone = false) {
   $result = db_select('chinese_address', 'c')->fields('c')->condition('c.parent_id ', $parentId)->execute()->fetchAllKeyed(0, 2);
-  if ($parentId == CHINESE_ADDRESS_ROOT_INDEX) {
+  if (!$excludeNone && $parentId == CHINESE_ADDRESS_ROOT_INDEX) {
     $result[CHINESE_ADDRESS_NULL_INDEX] = '--- 无----';
     ksort($result);
   }
@@ -424,6 +426,12 @@ function _chinese_address_get_region_index($address) {
   $result = db_select('chinese_address', 'c')->fields('c')->condition('id', $address, 'IN')->execute()->fetchAllKeyed(0, 2);
   return $result;
 }
+
+function chinese_address_form_field_ui_field_edit_form_alter(&$form, &$form_state, $form_id) {
+  $form['instance']['required']['#access'] = FALSE;  
+}
+
+
 
 /**
  *
