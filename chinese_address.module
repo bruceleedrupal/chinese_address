@@ -436,19 +436,7 @@ function _chinese_address_get_location($parentId = CHINESE_ADDRESS_ROOT_INDEX ,$
   return $result;
 }
 
-/**
 
-function _chinese_address_get_siblings($regionId = 1) {
-  $subquery = db_select('chinese_address', 'ca')->fields(
-        'ca', array(
-          'parent_id',
-        )
-    )->condition('ca.id', $regionId);
-
-  $result = db_select('chinese_address', 'c')->fields('c')->condition('c.parent_id ', $subquery, 'in')->execute()->fetchAllKeyed(0, 2);
-  return $result;
-}
- */
 /**
  */
 function _chinese_address_change_callback($form, $form_state) {
