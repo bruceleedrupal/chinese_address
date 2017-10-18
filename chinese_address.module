@@ -23,13 +23,16 @@ function chinese_address_element_info() {
     '#default_value' => array(
       'province' => CHINESE_ADDRESS_NULL_INDEX,
     ),
+    '#province_limit'=>array(),
     '#process' => array(
       '_chinese_address_element_process',
     ),
     '#element_validate' => array(
       '_chinese_address_form_element_validate',
     ),
-    '#has_detail' => 1,
+    '#has_street' => TRUE,
+    '#has_detail' => TRUE,
+    '#province_limit'=>array(),
     '#attached' => array(
       'css' => array(
         drupal_get_path('module', 'chinese_address') . '/assets/css/chinese_address.css',
@@ -63,7 +66,9 @@ function chinese_address_field_info() {
       'label' => t('Chinese Address'),
       'description' => t('This field stores Chinese  province, city, and county.'),
       'settings' => array(
-        'has_detail' => 1,
+        'has_detail' => TRUE,
+        'has_street' => TRUE,
+        'province_limit' =>array(),
       ),
       'default_widget' => 'chinese_address_default',
       'default_formatter' => 'chinese_address_default',
@@ -80,11 +85,11 @@ function chinese_address_field_formatter_info() {
     'chinese_address_default' => array(
       'label' => t('Chinese Address  Formatter'),
       'settings' => array(
-        'has_province' => 1,
-        'has_city' => 1,
-        'has_county' => 1,
-        'has_street' => 1,
-        'has_detail' => 1,
+        'has_province' => TRUE,
+       'has_city' => TRUE,
+       'has_county' => TRUE,
+       'has_street' => TRUE,
+       'has_detail' => TRUE,
       ),
       'field types' => array(
         'chinese_address',
@@ -163,7 +168,9 @@ function chinese_address_field_widget_form(&$form, &$form_state, $field, $instan
       $widget += array(
         '#type' => 'chinese_address',
         '#has_detail' => $settings['has_detail'],
-      '#required' => $instance['required'],
+        '#has_street' => $settings['has_street'],
+      '#province_limit' => $settings['province_limit'],
+       '#required' => $instance['required'],
       );
       break;
   }
@@ -175,14 +182,29 @@ function chinese_address_field_widget_form(&$form, &$form_state, $field, $instan
  */
 function chinese_address_field_settings_form($field, $instance, $has_data) {
   $form = array();
-  $settings = $field['settings'];
+
+  $settings = $field['settings'];  
   switch ($field['type']) {
     case 'chinese_address':
+      $form['has_street'] = array(
+      '#title' => t('Need Street Field?'),
+      '#type' => 'checkbox',
+      '#default_value' => $settings['has_street'],
+      );
       $form['has_detail'] = array(
         '#title' => t('Need Detail Field?'),
         '#type' => 'checkbox',
         '#default_value' => $settings['has_detail'],
       );
+      $form['province_limit'] = array(
+      '#title' => t('Limit Province?'),
+      '#type' => 'select',
+      '#options' =>  _chinese_address_get_location(CHINESE_ADDRESS_ROOT_INDEX, TRUE),
+      '#default_value' => $settings['province_limit'],
+     "#multiple" => TRUE,
+      '#description'=>t('如果限定为一个,那省份的选项则会被隐藏,按住CTRL进行多选,若要所有地区则留空'),
+      );
+     
       break;
   }
   return $form;
@@ -235,6 +257,7 @@ function chinese_address_field_formatter_settings_summary($field, $instance, $vi
  */
 function _chinese_address_element_process($element, $form_state, $complete_form) {
   $parents = $element['#parents'];
+  $province_limit = $element['#province_limit'];
   $address_value = drupal_array_get_nested_value($form_state['input'], $parents);
   if (!$address_value) {
     $address_value = $element['#value'];
@@ -244,19 +267,32 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
   'city' => CHINESE_ADDRESS_NULL_INDEX,
   'county' => CHINESE_ADDRESS_NULL_INDEX,
   'street' => CHINESE_ADDRESS_NULL_INDEX,
-    'detail' => '',
+   'detail' => '',
   );
-
-  $city = array();
-  if (isset($address_value['province'])) {
-    $city = _chinese_address_get_location($address_value['province']);
-    if (!isset($address_value['city']) || !array_key_exists($address_value['city'], $city)) {
+  
+  $province = _chinese_address_get_location(CHINESE_ADDRESS_ROOT_INDEX, FALSE,$province_limit);
+  $provinceAccess = count($province) >  2 ;
+  if(!$provinceAccess) {
+    end($province);
+    $address_value['province'] =  key($province);
+  }
+  
+  
+ $city = _chinese_address_get_location($address_value['province']);
+ if (!isset($address_value['city']) || !array_key_exists($address_value['city'], $city)) {
       $address_value['city'] = key($city);
     }
+  if(!$provinceAccess )  {
+    if( count($city) >1)
+       $cityAccess  = TRUE;
+    else 
+      $cityAccess = FALSE;
   }
-  else {
-    $city = _chinese_address_get_siblings($address_value['city']);
-  }
+  else 
+     $cityAccess = !empty($city);
+    
+  
+  
 
   $county = _chinese_address_get_location($address_value['city']);
   if (!isset($address_value['county']) || !array_key_exists($address_value['county'], $county)) {
@@ -264,20 +300,25 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
   }
 
   $street = _chinese_address_get_location($address_value['county']);
-  if (!isset($address_value['$street']) || !array_key_exists($address_value['$street'], $street)) {
+  if (!isset($address_value['street']) || !array_key_exists($address_value['street'], $street)) {
     $address_value['street'] = key($street);
   }
-
+  if(!$element['#has_street'])
+     $streetAccess= FALSE;
+  else 
+    $streetAccess = !empty($street) ;
+ 
   $element['province'] = array(
     '#type' => 'select',
     '#theme_wrappers' => array(),
+    '#access' => $provinceAccess,
     '#attributes' => array(
       'class' => array(
         'chinese-address-province',
       ),
     ),
     '#default_value' => $address_value['province'],
-    '#options' => _chinese_address_get_location(),
+    '#options' => $province,
     '#ajax' => array(
       'callback' => '_chinese_address_change_callback',
       'wrapper' => $element['#id'],
@@ -289,7 +330,7 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
 
   $element['city'] = array(
     '#type' => 'select',
-    '#access' => !empty($city),
+    '#access' => $cityAccess,
     '#validated' => TRUE,
     '#theme_wrappers' => array(),
     '#options' => $city,
@@ -333,7 +374,7 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
   $element['street'] = array(
     '#type' => 'select',
     '#theme_wrappers' => array(),
-    "#access" => !empty($street),
+    "#access" => $streetAccess,
     '#options' => $street,
     '#validated' => TRUE,
     '#default_value' => $address_value['street'],
@@ -382,17 +423,21 @@ function theme_chinese_address_element($variables) {
 
 /**
  */
-function _chinese_address_get_location($parentId = CHINESE_ADDRESS_ROOT_INDEX ,$excludeNone = false) {
-  $result = db_select('chinese_address', 'c')->fields('c')->condition('c.parent_id ', $parentId)->execute()->fetchAllKeyed(0, 2);
+function _chinese_address_get_location($parentId = CHINESE_ADDRESS_ROOT_INDEX ,$excludeNone = false, $limitIds = []) {
+  $query=db_select('chinese_address', 'c')->fields('c')->condition('c.parent_id ', $parentId);
+  if($limitIds) 
+    $result =$query->condition('c.id ', $limitIds);
+
+   $result = $query->execute()->fetchAllKeyed(0, 2);
   if (!$excludeNone && $parentId == CHINESE_ADDRESS_ROOT_INDEX) {
     $result[CHINESE_ADDRESS_NULL_INDEX] = '--- 无----';
-    ksort($result);
+     ksort($result);
   }
   return $result;
 }
 
 /**
- */
+
 function _chinese_address_get_siblings($regionId = 1) {
   $subquery = db_select('chinese_address', 'ca')->fields(
         'ca', array(
@@ -403,7 +448,7 @@ function _chinese_address_get_siblings($regionId = 1) {
   $result = db_select('chinese_address', 'c')->fields('c')->condition('c.parent_id ', $subquery, 'in')->execute()->fetchAllKeyed(0, 2);
   return $result;
 }
-
+ */
 /**
  */
 function _chinese_address_change_callback($form, $form_state) {
