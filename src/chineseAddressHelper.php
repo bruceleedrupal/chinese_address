@@ -14,14 +14,17 @@ class chineseAddressHelper
     /**
    *
    */
-    public static function _chinese_address_get_location($parentId = self::CHINESE_ADDRESS_ROOT_INDEX, $excludeNone = false) 
+    public static function _chinese_address_get_location($parentId = self::CHINESE_ADDRESS_ROOT_INDEX, $excludeNone = FALSE, $limitIds = array()) 
     {
-
-        $result = db_select('chinese_address', 'c')->fields('c')->condition('c.parent_id ', $parentId)->execute()->fetchAllKeyed(0, 2);
-        if (!$excludeNone && $parentId == self::CHINESE_ADDRESS_ROOT_INDEX) {
-            $result[self::CHINESE_ADDRESS_NULL_INDEX] = '--- 无----';
+      $query=db_select('chinese_address', 'c')->fields('c')->condition('c.parent_id ', $parentId);
+      if($limitIds)
+        $result =$query->condition('c.id ', $limitIds ,'in');
+        
+        $result = $query->execute()->fetchAllKeyed(0, 2);
+        if (!$excludeNone && $parentId ==  self::CHINESE_ADDRESS_ROOT_INDEX) {
+          $result[CHINESE_ADDRESS_NULL_INDEX] = '--- 无----';
+          ksort($result);
         }
-        ksort($result);
         return $result;
     }
 

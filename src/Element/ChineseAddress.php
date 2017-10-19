@@ -34,7 +34,9 @@ class ChineseAddress extends FormElement
         [$class, 'validateChineseAddress'],
         ],
         '#theme_wrappers' => ['form_element', 'chinese_address_element'],
-        "#has_detail" => true,
+        '#has_detail' => TRUE,
+        '#has_street' => TRUE,
+        '#province_limit' => array(),
         '#attached' => [
         'library' => ['chinese_address/drupal.chineseAddress'],
         ],
@@ -109,19 +111,39 @@ class ChineseAddress extends FormElement
 
         $class = ChineseAddress::class;
         $address_value = $element['#value'];
-
-        $parents_prefix = implode('_', $element['#array_parents']);
+        $province_limit = $element['#province_limit'];
+      
+        $address_value += array(
+        'province' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
+        'city' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
+        'county' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
+        'street' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
+        'detail' => '',
+        );
+        
+        $province =chineseAddressHelper:: _chinese_address_get_location(chineseAddressHelper::CHINESE_ADDRESS_ROOT_INDEX, FALSE,$province_limit);
+        $provinceAccess = count($province) >  2 ;
+        if(!$provinceAccess) {
+          end($province);
+          $address_value['province'] =  key($province);
+        }
+ 
 
         $city = [];
-        if (isset($address_value['province'])) {
-            $city = chineseAddressHelper::_chinese_address_get_location($address_value['province']);
+         $city = chineseAddressHelper::_chinese_address_get_location($address_value['province']);
             if (!isset($address_value['city']) || !array_key_exists($address_value['city'], $city)) {
                 $address_value['city'] = key($city);
             }
-        }
-        else {
-            $city = chineseAddressHelper::_chinese_address_get_siblings($address_value['city']);
-        }
+          if(!$provinceAccess )  {
+            if( count($city) >1)
+              $cityAccess  = TRUE;
+              else
+                $cityAccess = FALSE;
+          }
+          else
+            $cityAccess = !empty($city);
+              
+   
 
         $county = chineseAddressHelper::_chinese_address_get_location($address_value['city']);
         if (!isset($address_value['county']) || !array_key_exists($address_value['county'], $county)) {
@@ -132,17 +154,31 @@ class ChineseAddress extends FormElement
         if (!isset($address_value['street']) || !array_key_exists($address_value['street'], $street)) {
             $address_value['street'] = key($street);
         }
+        if(!$element['#has_street'])
+          $streetAccess= FALSE;
+          else
+         $streetAccess = !empty($street) ;
+         
+         if(!$element['#has_detail'])
+           $detailAccess = FALSE;
+           else {
+             if($element['#has_street'])
+                  $detailAccess= !empty($street);
+               else
+             $detailAccess= !empty($county);
+           }
 
         $element['province'] = [
         '#type' => 'select',
+        '#access' => $provinceAccess,
         '#theme_wrappers' => [],
         '#attributes' => [
         'class' => [
           'chinese-address-province',
-        ],
+        ], 
         ],
         '#default_value' => $address_value['province'],
-        '#options' => chineseAddressHelper::_chinese_address_get_location(),
+        '#options' => $province,
         '#ajax' => [
         'callback' => [$class, '_chinese_address_change_callback'],
         'wrapper' => $element['#id'],
@@ -154,7 +190,7 @@ class ChineseAddress extends FormElement
 
         $element['city'] = [
         '#type' => 'select',
-        "#access" => !empty($city),
+        "#access" =>$cityAccess,
         '#validated' => true,
         '#theme_wrappers' => [],
         '#options' => $city,
@@ -198,7 +234,7 @@ class ChineseAddress extends FormElement
         $element['street'] = [
         '#type' => 'select',
         '#theme_wrappers' => [],
-        "#access" => !empty($street),
+        "#access" => $streetAccess,
         '#options' => $street,
         '#validated' => true,
         '#default_value' => $address_value['street'],
@@ -213,7 +249,7 @@ class ChineseAddress extends FormElement
             $element['detail'] = [
             '#type' => 'textfield',
             '#theme_wrappers' => [],
-            '#access' => !empty($city),
+            '#access' => $detailAccess,
             '#size' => 20,
             '#default_value' => $address_value['detail'],
             '#maxlength' => 60,
@@ -224,7 +260,7 @@ class ChineseAddress extends FormElement
             ],
             ];
         }
-
+      
         return $element;
     }
 
