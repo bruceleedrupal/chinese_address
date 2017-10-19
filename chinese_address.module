@@ -291,10 +291,7 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
   else 
      $cityAccess = !empty($city);
     
-  
-  
-
-  $county = _chinese_address_get_location($address_value['city']);
+   $county = _chinese_address_get_location($address_value['city']);
   if (!isset($address_value['county']) || !array_key_exists($address_value['county'], $county)) {
     $address_value['county'] = key($county);
   }
@@ -307,7 +304,17 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
      $streetAccess= FALSE;
   else 
     $streetAccess = !empty($street) ;
- 
+    dpm($element);
+    if(!$element['#has_detail'])
+         $detailAccess = FALSE;
+    else {
+      if($element['#has_street'])
+           $detailAccess= !empty($street);
+      else 
+        $detailAccess= !empty($county);
+    }
+    
+    
   $element['province'] = array(
     '#type' => 'select',
     '#theme_wrappers' => array(),
@@ -385,10 +392,10 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
     ),
   );
 
-  if ($element['#has_detail']) {
+
     $element['detail'] = array(
       '#type' => 'textfield',
-      '#access' => !empty($city),
+      '#access' =>$detailAccess,
       '#theme_wrappers' => array(),
       '#size' => 20,
       '#default_value' => $address_value['detail'],
@@ -399,7 +406,7 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
         ),
       ),
     );
-  }
+
 
   return $element;
 }
@@ -426,7 +433,7 @@ function theme_chinese_address_element($variables) {
 function _chinese_address_get_location($parentId = CHINESE_ADDRESS_ROOT_INDEX ,$excludeNone = false, $limitIds = []) {
   $query=db_select('chinese_address', 'c')->fields('c')->condition('c.parent_id ', $parentId);
   if($limitIds) 
-    $result =$query->condition('c.id ', $limitIds);
+    $result =$query->condition('c.id ', $limitIds, 'in');
 
    $result = $query->execute()->fetchAllKeyed(0, 2);
   if (!$excludeNone && $parentId == CHINESE_ADDRESS_ROOT_INDEX) {
