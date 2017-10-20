@@ -29,6 +29,8 @@ class ChineseAddressWidgetType extends WidgetBase
         '#type' => 'chinese_address',
         '#default_value' => $items[$delta]->getValue() ? $items[$delta]->getValue() : null,
         '#has_detail' => $this->getFieldSetting('has_detail') ,
+        '#has_street' => $this->getFieldSetting('has_street') ,
+        '#province_limit' => $this->getFieldSetting('province_limit') ,
         ];
         return $element;
     }

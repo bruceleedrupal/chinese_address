@@ -30,6 +30,8 @@ class ChineseAddressFieldType extends FieldItemBase
     Public static function defaultStorageSettings() {
     return [
     'has_detail' => TRUE,
+    'has_street' => TRUE,
+    'province_limit' => array(),
    ] + parent::defaultStorageSettings();
     }
 
@@ -111,11 +113,27 @@ class ChineseAddressFieldType extends FieldItemBase
     public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
       $element = [];
       
+      $element['has_street'] = array(
+      '#title' => t('Need Street Field?'),
+      '#type' => 'checkbox',
+      '#default_value' => $this->getSetting('has_street'),
+      );
+      
       $element['has_detail'] = array(
       '#title' => t('Need Detail Field?'),
       '#type' => 'checkbox',
       '#default_value' => $this->getSetting('has_detail'),
       );
+      
+      $element['province_limit'] = array(
+      '#title' => t('Limit Province?'),
+      '#type' => 'select',
+      '#options' =>  chineseAddressHelper::chinese_address_get_location(chineseAddressHelper::CHINESE_ADDRESS_ROOT_INDEX, TRUE),
+      '#default_value' => $this->getSetting('province_limit'),
+      "#multiple" => TRUE,
+      '#description'=>t('如果限定为一个,那省份的选项则会被隐藏,按住CTRL进行多选,若要所有地区则留空'),
+      );
+      
       
       return $element;
     }
@@ -129,7 +147,7 @@ class ChineseAddressFieldType extends FieldItemBase
         $city = $this->get('city')->getValue();
         $county = $this->get('county')->getValue();
         $street = $this->get('street')->getValue();
-        return ($province == chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX && $city==  chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX  && $county==  chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX  &&  $street==  chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX);
+        return ($province == chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX  &&  $city==  chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX  &&  $county==  chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX &&  $street ==  chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX  );
     }
 
 }

@@ -56,6 +56,9 @@ class ChineseAddress extends FormElement
         else {
             $default_value = [
             'province' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
+            'city' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
+            'county'=>chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
+            'street'=>chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
             ];
 
             if (isset($element['#default_value'])) {
@@ -112,46 +115,84 @@ class ChineseAddress extends FormElement
         $class = ChineseAddress::class;
         $address_value = $element['#value'];
         $province_limit = $element['#province_limit'];
-      
-        $address_value += array(
+
+   /*   
+      $address_value += array(
         'province' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         'city' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         'county' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         'street' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         'detail' => '',
-        );
+        );*/
         
-        $province =chineseAddressHelper:: _chinese_address_get_location(chineseAddressHelper::CHINESE_ADDRESS_ROOT_INDEX, FALSE,$province_limit);
+        $province =chineseAddressHelper:: chinese_address_get_location(chineseAddressHelper::CHINESE_ADDRESS_ROOT_INDEX, FALSE,$province_limit);
         $provinceAccess = count($province) >  2 ;
         if(!$provinceAccess) {
           end($province);
           $address_value['province'] =  key($province);
         }
- 
-
+        
+       
         $city = [];
-         $city = chineseAddressHelper::_chinese_address_get_location($address_value['province']);
-            if (!isset($address_value['city']) || !array_key_exists($address_value['city'], $city)) {
-                $address_value['city'] = key($city);
-            }
-          if(!$provinceAccess )  {
-            if( count($city) >1)
-              $cityAccess  = TRUE;
-              else
-                $cityAccess = FALSE;
-          }
-          else
-            $cityAccess = !empty($city);
-              
-   
-
-        $county = chineseAddressHelper::_chinese_address_get_location($address_value['city']);
-        if (!isset($address_value['county']) || !array_key_exists($address_value['county'], $county)) {
-            $address_value['county'] = key($county);
+        if($provinceAccess) {
+          $excludeNoneCity = TRUE;
+          $cityCompare = 1;
         }
+        else {
+          $excludeNoneCity= FALSE ;  
+          $cityCompare =2 ;
+        }
+   
+        $city = chineseAddressHelper::chinese_address_get_location($address_value['province'] , $excludeNoneCity );
+        $filterCity=chineseAddressHelper::chinese_address_filter_none_option($city);
+        if( count($city) > $cityCompare)
+          $cityAccess  = TRUE;
+          else
+         $cityAccess = FALSE;
+        
+     
+         if($provinceAccess) {
+           if( !array_key_exists($address_value['city'], $filterCity)) {
+             $address_value['city'] = key($filterCity);
+           }
+         }
+         else {
+           if($address_value['city']==chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX){
+             if($cityAccess) {
+             $parent = chineseAddressHelper::chinese_address_get_parent(array($address_value['county']));
+             if(isset($parent[$address_value['county']]))
+               $address_value['city'] = $parent[$address_value['county']];
+             }
+             else {
+               $address_value['city'] = key($filterCity);
+             }
+            }
+           }
 
-        $street = chineseAddressHelper:: _chinese_address_get_location($address_value['county']);
-        if (!isset($address_value['street']) || !array_key_exists($address_value['street'], $street)) {
+
+ 
+         if(!$provinceAccess && !$cityAccess) {
+               $excludeNoneCounty= FALSE ;
+               $countyCompare =1 ;      
+         }
+         else {
+             $excludeNoneCounty= TRUE ;
+             $countyCompare =0 ;      
+           }
+          
+         $county = chineseAddressHelper::chinese_address_get_location($address_value['city'],$excludeNoneCounty);
+         $filterCounty=chineseAddressHelper::chinese_address_filter_none_option($county);
+         if ($cityAccess && (($address_value['county']==chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX) ||!array_key_exists($address_value['county'], $filterCounty))) {
+           $address_value['county'] = key($filterCounty);
+        }
+        if(count($county) > $countyCompare)
+            $countyAccess = TRUE;
+        else 
+          $countyAccess = FALSE;
+        
+          
+        $street = chineseAddressHelper:: chinese_address_get_location($address_value['county'], true);
+        if (( $address_value['street']==chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX) ||!array_key_exists($address_value['street'], chineseAddressHelper::chinese_address_filter_none_option($street))) {
             $address_value['street'] = key($street);
         }
         if(!$element['#has_street'])
@@ -213,7 +254,7 @@ class ChineseAddress extends FormElement
         $element['county'] = [
         '#type' => 'select',
         '#theme_wrappers' => [],
-        "#access" => !empty($county),
+        "#access" => $countyAccess,
         '#options' => $county,
         '#validated' => true,
         '#default_value' => $address_value['county'],
@@ -270,13 +311,14 @@ class ChineseAddress extends FormElement
     public static function validateChineseAddress(&$element, FormStateInterface $form_state, &$complete_form) 
     {
         $values = $element['#value'];
-        $values += [
+        /*
+      $values += [
         'province' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         'city' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         'county' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         'street' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
         'detail' => '',
-        ];
+        ];*/
         $form_state->setValueForElement($element, $values);
     }
 
