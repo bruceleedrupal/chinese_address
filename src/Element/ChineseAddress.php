@@ -49,8 +49,9 @@ class ChineseAddress extends FormElement
     public static function valueCallback(&$element, $input, FormStateInterface $form_state) 
     {
 
+      $value= array();
         // Find the current value of this field.
-        if ($input !== false) {
+      if ($input !== false && $input !== NULL) {
             return $input;
         }
         else {
@@ -59,14 +60,16 @@ class ChineseAddress extends FormElement
             'city' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
             'county'=>chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
             'street'=>chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
+            'detail' => '',
             ];
 
             if (isset($element['#default_value'])) {
-                $value = $element['#default_value'];
+              $value = $element['#default_value'];
             }
-            else {
-                $value = $default_value;
-            }
+         
+            $value += $default_value;
+       
+        
             return $value;
         }
     }
@@ -116,14 +119,7 @@ class ChineseAddress extends FormElement
         $address_value = $element['#value'];
         $province_limit = $element['#province_limit'];
 
-   /*   
-      $address_value += array(
-        'province' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
-        'city' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
-        'county' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
-        'street' => chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX,
-        'detail' => '',
-        );*/
+     
         
         $province =chineseAddressHelper:: chinese_address_get_location(chineseAddressHelper::CHINESE_ADDRESS_ROOT_INDEX, FALSE,$province_limit);
         $provinceAccess = count($province) >  2 ;
@@ -159,12 +155,12 @@ class ChineseAddress extends FormElement
          else {
            if($address_value['city']==chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX){
              if($cityAccess) {
-             $parent = chineseAddressHelper::chinese_address_get_parent(array($address_value['county']));
+            /* $parent = chineseAddressHelper::chinese_address_get_parent(array($address_value['county']));
              if(isset($parent[$address_value['county']]))
-               $address_value['city'] = $parent[$address_value['county']];
+               $address_value['city'] = $parent[$address_value['county']];*/
              }
              else {
-               $address_value['city'] = key($filterCity);
+               $address_value['city'] = key($filterCity);//直辖市
              }
             }
            }
@@ -182,7 +178,7 @@ class ChineseAddress extends FormElement
           
          $county = chineseAddressHelper::chinese_address_get_location($address_value['city'],$excludeNoneCounty);
          $filterCounty=chineseAddressHelper::chinese_address_filter_none_option($county);
-         if ($cityAccess && (($address_value['county']==chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX) ||!array_key_exists($address_value['county'], $filterCounty))) {
+         if (($provinceAccess ||$cityAccess) && (($address_value['county']==chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX) ||!array_key_exists($address_value['county'], $filterCounty))) {
            $address_value['county'] = key($filterCounty);
         }
         if(count($county) > $countyCompare)
@@ -190,7 +186,8 @@ class ChineseAddress extends FormElement
         else 
           $countyAccess = FALSE;
         
-          
+ 
+        
         $street = chineseAddressHelper:: chinese_address_get_location($address_value['county'], true);
         if (( $address_value['street']==chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX) ||!array_key_exists($address_value['street'], chineseAddressHelper::chinese_address_filter_none_option($street))) {
             $address_value['street'] = key($street);
