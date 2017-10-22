@@ -103,17 +103,16 @@ function chinese_address_field_formatter_info() {
 function chinese_address_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
   $settings = $display['settings'];
-
+ 
   switch ($display['type']) {
     case 'chinese_address_default':
       foreach ($items as $delta => $item) {
         $address_names = _chinese_address_get_region_index($item);
         $address = array();
-
-        $address['province'] = $settings['has_province'] && isset($item['province']) ? $address_names[$item['province']] : '';
-        $address['city'] = $settings['has_city'] && isset($item['city']) ? $address_names[$item['city']] : '';
-        $address['county'] = $settings['has_county'] && isset($item['county']) && $item['county'] ? $address_names[$item['county']] : '';
-        $address['street'] = $settings['has_street'] && isset($item['street']) && $item['street'] ? $address_names[$item['street']] : '';
+        $address['province'] = $settings['has_province'] &&($item['province'] != CHINESE_ADDRESS_NULL_INDEX) ? $address_names[$item['province']] : '';
+        $address['city'] = $settings['has_city'] && ($item['city'] != CHINESE_ADDRESS_NULL_INDEX) ? $address_names[$item['city']] : '';
+        $address['county'] = $settings['has_county'] && ($item['county'] != CHINESE_ADDRESS_NULL_INDEX) && $item['county'] ? $address_names[$item['county']] : '';
+        $address['street'] = $settings['has_street'] && ($item['street'] != CHINESE_ADDRESS_NULL_INDEX) && $item['street'] ? $address_names[$item['street']] : '';
         $address['detail'] = $settings['has_detail'] && isset($item['detail']) ? $item['detail'] : '';
 
         $element[$delta] = array(
@@ -269,7 +268,7 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
   'street' => CHINESE_ADDRESS_NULL_INDEX,
    'detail' => '',
   );
-  
+  //province
   $province = _chinese_address_get_location(CHINESE_ADDRESS_ROOT_INDEX, FALSE,$province_limit);
   $provinceAccess = count($province) >  2 ;
   if(!$provinceAccess) {
@@ -277,34 +276,55 @@ function _chinese_address_element_process($element, $form_state, $complete_form)
     $address_value['province'] =  key($province);
   }
   
-  
- $city = _chinese_address_get_location($address_value['province']);
- if (!isset($address_value['city']) || !array_key_exists($address_value['city'], $city)) {
-      $address_value['city'] = key($city);
-    }
-  if(!$provinceAccess )  {
-    if( count($city) >1)
-       $cityAccess  = TRUE;
-    else 
-      $cityAccess = FALSE;
-  }
-  else 
-     $cityAccess = !empty($city);
+  //city
+  $city = _chinese_address_get_location($address_value['province'],$provinceAccess);
+ $filterCity=_chinese_address_filter_none_option($city);
+ if( count($filterCity) > 1)
+   $cityAccess  = TRUE;
+   else
+   $cityAccess = FALSE;
+   
+   if($provinceAccess  || count($filterCity)== 1 ) {
+     if ($address_value['city']==CHINESE_ADDRESS_NULL_INDEX  || !array_key_exists($address_value['city'], $filterCity)) {
+       $address_value['city'] = key($filterCity);
+        }
+   }
     
-   $county = _chinese_address_get_location($address_value['city']);
-  if (!isset($address_value['county']) || !array_key_exists($address_value['county'], $county)) {
+
+//county
+   if(!$provinceAccess && !$cityAccess) {
+     $excludeNoneCounty= FALSE ;
+     $countyCompare =1 ;
+   }
+   else {
+     $excludeNoneCounty= TRUE ;
+     $countyCompare =0 ;
+   }
+   
+   $county = _chinese_address_get_location($address_value['city'], $excludeNoneCounty);
+   $filterCounty=_chinese_address_filter_none_option($county);
+   
+   if (($provinceAccess ||$cityAccess)  && ($address_value['county']  ==CHINESE_ADDRESS_NULL_INDEX  || !array_key_exists($address_value['county'], $county))) {
     $address_value['county'] = key($county);
   }
+  if(count($county) > $countyCompare)
+       $countyAccess = TRUE;
+    else
+     $countyAccess = FALSE;
 
-  $street = _chinese_address_get_location($address_value['county']);
-  if (!isset($address_value['street']) || !array_key_exists($address_value['street'], $street)) {
+     
+   //street
+     $street = _chinese_address_get_location($address_value['county'],true);
+  if ($address_value['street'] ==CHINESE_ADDRESS_NULL_INDEX  || !array_key_exists($address_value['street'], $street)) {
     $address_value['street'] = key($street);
   }
   if(!$element['#has_street'])
      $streetAccess= FALSE;
   else 
     $streetAccess = !empty($street) ;
-    dpm($element);
+   
+    
+    //detail
     if(!$element['#has_detail'])
          $detailAccess = FALSE;
     else {
@@ -436,14 +456,19 @@ function _chinese_address_get_location($parentId = CHINESE_ADDRESS_ROOT_INDEX ,$
     $result =$query->condition('c.id ', $limitIds, 'in');
 
    $result = $query->execute()->fetchAllKeyed(0, 2);
-  if (!$excludeNone && $parentId == CHINESE_ADDRESS_ROOT_INDEX) {
+  if (!$excludeNone) {
     $result[CHINESE_ADDRESS_NULL_INDEX] = '--- 无----';
      ksort($result);
   }
   return $result;
 }
 
-
+ function _chinese_address_filter_none_option($address =array())
+{
+  if(isset($address[CHINESE_ADDRESS_NULL_INDEX]))
+    unset($address[CHINESE_ADDRESS_NULL_INDEX]);
+    return $address;
+}
 /**
  */
 function _chinese_address_change_callback($form, $form_state) {
