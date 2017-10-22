@@ -120,7 +120,7 @@ class ChineseAddress extends FormElement
         $province_limit = $element['#province_limit'];
 
      
-        
+        //province
         $province =chineseAddressHelper:: chinese_address_get_location(chineseAddressHelper::CHINESE_ADDRESS_ROOT_INDEX, FALSE,$province_limit);
         $provinceAccess = count($province) >  2 ;
         if(!$provinceAccess) {
@@ -128,45 +128,22 @@ class ChineseAddress extends FormElement
           $address_value['province'] =  key($province);
         }
         
-       
-        $city = [];
-        if($provinceAccess) {
-          $excludeNoneCity = TRUE;
-          $cityCompare = 1;
-        }
-        else {
-          $excludeNoneCity= FALSE ;  
-          $cityCompare =2 ;
-        }
-   
-        $city = chineseAddressHelper::chinese_address_get_location($address_value['province'] , $excludeNoneCity );
+        //city
+       $city = chineseAddressHelper::chinese_address_get_location($address_value['province'] , $provinceAccess );
         $filterCity=chineseAddressHelper::chinese_address_filter_none_option($city);
-        if( count($city) > $cityCompare)
+        if( count($filterCity) > 1)
           $cityAccess  = TRUE;
           else
          $cityAccess = FALSE;
         
      
-         if($provinceAccess) {
-           if( !array_key_exists($address_value['city'], $filterCity)) {
+         if($provinceAccess  || count($filterCity)== 1 ) {
+           if($address_value['city']==chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX || !array_key_exists($address_value['city'], $filterCity)){
              $address_value['city'] = key($filterCity);
            }
          }
-         else {
-           if($address_value['city']==chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX){
-             if($cityAccess) {
-            /* $parent = chineseAddressHelper::chinese_address_get_parent(array($address_value['county']));
-             if(isset($parent[$address_value['county']]))
-               $address_value['city'] = $parent[$address_value['county']];*/
-             }
-             else {
-               $address_value['city'] = key($filterCity);//直辖市
-             }
-            }
-           }
-
-
- 
+      
+    //county
          if(!$provinceAccess && !$cityAccess) {
                $excludeNoneCounty= FALSE ;
                $countyCompare =1 ;      
@@ -187,7 +164,7 @@ class ChineseAddress extends FormElement
           $countyAccess = FALSE;
         
  
-        
+        //street
         $street = chineseAddressHelper:: chinese_address_get_location($address_value['county'], true);
         if (( $address_value['street']==chineseAddressHelper::CHINESE_ADDRESS_NULL_INDEX) ||!array_key_exists($address_value['street'], chineseAddressHelper::chinese_address_filter_none_option($street))) {
             $address_value['street'] = key($street);

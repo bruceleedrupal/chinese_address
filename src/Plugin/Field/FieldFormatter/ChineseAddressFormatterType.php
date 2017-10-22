@@ -113,7 +113,7 @@ class ChineseAddressFormatterType extends FormatterBase
         // should equal the output, including newlines.
         $settings = $this->getSettings();
         $address = $item->getValue();
-        $address_names = chineseAddressHelper::chinese_address_get_region_index($item->getValue());
+        $address_names = chineseAddressHelper::chinese_address_get_region_index($address);
 
         $address['province'] = $settings['has_province'] && isset($address['province']) ? $address_names[$address['province']] : '';
         $address['city'] = $settings['has_city'] && isset($address['city']) ? $address_names[$address['city']] : '';
