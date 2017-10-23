@@ -116,7 +116,7 @@ class ChineseAddressFormatterType extends FormatterBase
         $address_names = chineseAddressHelper::chinese_address_get_region_index($address);
 
         $address['province'] = $settings['has_province'] && isset($address['province']) ? $address_names[$address['province']] : '';
-        $address['city'] = $settings['has_city'] && isset($address['city']) ? $address_names[$address['city']] : '';
+        $address['city'] = $settings['has_city'] && isset($address['city']) && $address_names[$address['city']] != chineseAddressHelper::CHINESE_ADDRESS_NAME_HIDE ? $address_names[$address['city']] : '';
         $address['county'] = $settings['has_county'] && isset($address['county']) && $address['county'] ? $address_names[$address['county']] : '';
         $address['street'] = $settings['has_street'] && isset($address['street']) && $address['street'] ? $address_names[$address['street']] : '';
         $address['detail'] = $settings['has_detail'] && isset($address['detail']) ? $address['detail'] : '';

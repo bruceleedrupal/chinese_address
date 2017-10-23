@@ -110,7 +110,9 @@ function _chinese_address_insert_address($address, $parent, $level) {
  */
 function _chinese_address_insert_rows() {
   global $queryArray;
-  $query = db_insert('chinese_address')->fields([
+  $connection =\Drupal::database();
+  
+  $query = $connection->insert('chinese_address')->fields([
     'id',
     'name',
     'parent_id',
