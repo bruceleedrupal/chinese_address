@@ -109,10 +109,10 @@ function chinese_address_field_formatter_view($entity_type, $entity, $field, $in
       foreach ($items as $delta => $item) {
         $address_names = _chinese_address_get_region_index($item);
         $address = array();
-        $address['province'] = $settings['has_province'] &&($item['province'] != CHINESE_ADDRESS_NULL_INDEX) ? $address_names[$item['province']] : '';
-        $address['city'] = $settings['has_city'] && ($item['city'] != CHINESE_ADDRESS_NULL_INDEX) ? $address_names[$item['city']] : '';
-        $address['county'] = $settings['has_county'] && ($item['county'] != CHINESE_ADDRESS_NULL_INDEX) && $item['county'] ? $address_names[$item['county']] : '';
-        $address['street'] = $settings['has_street'] && ($item['street'] != CHINESE_ADDRESS_NULL_INDEX) && $item['street'] ? $address_names[$item['street']] : '';
+        $address['province'] = $settings['has_province'] &&isset($item['province']) ? $address_names[$item['province']] : '';
+        $address['city'] = $settings['has_city'] &&isset($item['city'])&&  $address_names[$item['city']] != CHINESE_ADDRESS_NAME_HIDE ? $address_names[$item['city']] : '';
+        $address['county'] = $settings['has_county'] && isset($item['county'])  &&  $address_names[$item['county']] != CHINESE_ADDRESS_NAME_HIDE  ? $address_names[$item['county']] : '';
+        $address['street'] = $settings['has_street'] && isset($item['street']) ? $address_names[$item['street']] : '';
         $address['detail'] = $settings['has_detail'] && isset($item['detail']) ? $item['detail'] : '';
 
         $element[$delta] = array(
